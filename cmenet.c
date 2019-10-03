@@ -876,7 +876,10 @@ build_listen_attrs(CManager cm, CMtrans_services svc, enet_client_data_ptr ecd,
     get_IP_config(host_name, sizeof(host_name), &IP, NULL, NULL,
 		  &use_hostname, listen_info, svc->trace_out, (void *)cm);
 #else
-    get_IPv6_config(host_name, sizeof(host_name), &IP, (char*)&IPV6, NULL, NULL,
+// for the moment, just use ipv4 in the ipv6 address
+//    get_IPv6_config(host_name, sizeof(host_name), &IP, (char*)&IPV6, NULL, NULL,
+//		  &use_hostname, listen_info, svc->trace_out, (void *)cm);
+    get_IP_config(host_name, sizeof(host_name), &IP, NULL, NULL,
 		  &use_hostname, listen_info, svc->trace_out, (void *)cm);
     ((enet_uint32 *)&IPV6.s6_addr)[0] = 0;
     ((enet_uint32 *)&IPV6.s6_addr)[1] = 0;
@@ -985,7 +988,11 @@ libcmenet_LTX_non_blocking_listen(CManager cm, CMtrans_services svc,
 
 	svc->trace_out(cm, "CMEnet trying to bind selected port %d", port_num);
 	server = enet_host_create (& address /* the address to bind the server host to */, 
-				   0      /* allow up to 4095 clients and/or outgoing connections */,
+#ifdef ZPL_ENET_FOUND
+                                   4095,     /* 4095 connections */
+#else
+				   0,      /* dynamic */
+#endif
 				   1      /* allow up to 2 channels to be used, 0 and 1 */,
 				   0      /* assume any amount of incoming bandwidth */,
 				   0      /* assume any amount of outgoing bandwidth */);
@@ -1014,7 +1021,11 @@ libcmenet_LTX_non_blocking_listen(CManager cm, CMtrans_services svc,
 	    svc->trace_out(cm, "CMEnet trying to bind port %d", target);
 
 	    server = enet_host_create (& address /* the address to bind the server host to */, 
-				       0     /* 0 means dynamic alloc clients and/or outgoing connnections */,
+#ifdef ZPL_ENET_FOUND
+				       4095,     /* 4095 connections */
+#else
+				       0,     /* 0 means dynamic alloc clients and/or outgoing connnections */
+#endif
 				       1      /* allow up to 2 channels to be used, 0 and 1 */,
 				       0      /* assume any amount of incoming bandwidth */,
 				       0      /* assume any amount of outgoing bandwidth */);

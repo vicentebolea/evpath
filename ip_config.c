@@ -73,7 +73,6 @@ get_self_ipv6_iface(struct in6_addr *addr_buf, CMTransport_trace trace_func, voi
     static struct in6_addr saved_return;
 #endif
     int rv = 0;
-    printf("Called ipv6 iface, first call %d, interface %p\n", first_call, interface);
     if (!first_call && !interface) {
 	memcpy(addr_buf, &saved_return, sizeof(struct in6_addr));
 	return 1;
